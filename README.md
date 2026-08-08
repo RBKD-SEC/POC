@@ -45,6 +45,7 @@ python3 CVE-2025-54424.py -f targets.txt -t 20
 |------|-----|------|------|
 | `n8n/` | CVE-2026-21858 | LFI → Admin Token → RCE | n8n 工作流平台 |
 | `react/` | CVE-2025-55182 | RCE | React Server Components |
+| `spring4shell/` | CVE-2022-22965 | RCE (Spring4Shell) | Spring Framework (WAR on Tomcat) |
 
 ### standalone
 
