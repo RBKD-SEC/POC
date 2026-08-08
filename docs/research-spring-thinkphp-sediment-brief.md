@@ -68,11 +68,18 @@ fathom M10 系列（web RCE 检测）实施中发现门控问题，编排方调�
 
 ## 任务 C：POC 仓库（pocsuite3，一键检测利用）
 
-`~/DEV/POC/pocsuite3/` 增加 Spring4Shell 检测/利用脚本（nuclei 官方是 OAST 反连、无法一键利用；fathom 是检测器不做利用——此脚本补"一键检测+利用"缺口）：
+**先读 skill**：`pocsuite3-poc-authoring`（Hermes skill，2026-08-08 创建）——pocsuite3 POC 的完整写法（POCBase 结构、VUL_TYPE/POC_CATEGORY 枚举、verify/attack/shell 三模式、pitfalls、查重纪律）。参考实现 `~/DEV/POC/pocsuite3/n8n/cve_2026_21858_rce_poc.py`（已验证的 4 模式完整范例）。
+
+**查重（已由编排方确认）**：finger 无 spring/thinkphp 条目（120 apps）、RBKD-templates 无相关模板、POC 无相关脚本——三仓库均干净。**实施时仍需复查**（用户明确要求防重复）：
+```bash
+grep -rli "spring\|thinkphp\|22965" ~/DEV/POC/          # 仓库内重复
+find ~/nuclei-templates -iname "*spring*" -o -iname "*thinkphp*" 2>/dev/null | head  # nuclei 官方覆盖评估
+```
+若 nuclei 官方已有可检测模板且无需一键利用 → 如实报告"nuclei 已覆盖，pocsuite3 版不建"（仓库定位：只放 nuclei 无法覆盖/需一键利用的）。
 
 - 路径：`~/DEV/POC/pocsuite3/spring4shell/cve_2022_22965_rce_poc.py`
 - 参考已验证方案：afrog CVE-2022-22965（**GET mutation 写 tomcatwar.jsp** + GET 执行 `cat /etc/passwd` 回显 `root:.*` 正则）——不用 fscan POST 方案（已实测 GET 更可靠）
-- pocsuite3 标准格式：`class PoC(OTLPOCBase)` + `verify()` 检测 + `attack()` 利用（参考 `~/DEV/POC/pocsuite3/n8n/cve_2026_21858_rce_poc.py` 的结构）
+- pocsuite3 标准格式：`class PoC(POCBase)` + `_verify()` 检测 + `_attack()` 利用（按 skill 模板）
 - 命令参数：`--url http://target`（verify 模式回显 /etc/passwd 内容即证明）
 - **利用后清理**：删除写入的 tomcatwar.jsp（fathom 铁律"不留痕"同样适用 POC 仓库）
 - README 更新：`~/DEV/POC/README.md` 目录结构表加 spring4shell 行；`TODO.md` 若该 CVE 在列则标记完成
