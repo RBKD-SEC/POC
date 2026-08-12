@@ -98,6 +98,28 @@ Commit message 建议格式：
 [fix] CVE-2025-XXXXX - 修复 XX 问题
 ```
 
+## Capability catalog & release
+
+本仓库是 repository-orchestration-v2 的 PoC 能力仓。发布门禁：
+
+- 每个 runnable entry（`.py`/`.sh`/`.c` 等）对应一个稳定能力 ID；helper、图片、载荷、Makefile 等作为 component 关联。
+- 默认 safety 为 **`manual-only`**：不生成自动执行 command，所有 PoC 只能由人工在授权目标上手动运行。
+- 缺授权、来源矛盾或无法安全验证的资产进入 `capabilities/quarantine.json`，不进入公开 release。
+- `capabilities/catalog-v1.json` 仅包含 provenance 双人审批为 `accepted` 的资产；当前全部资产 held，catalog 为空。
+- 发布候选通过 `scripts/stage_release.py --calver YYYY.MM.DD.N` 生成，包含 catalog、schema、LICENSE、NOTICE、provenance、quarantine 与 rights report。
+
+本地门禁：
+
+```bash
+python scripts/validate_poc_gates.py
+python scripts/test_poc_gates.py
+python scripts/generate_catalog.py --write
+python scripts/stage_release.py --calver 2026.08.10.1
+cd releases/2026.08.10.1 && shasum -a 256 -c SHA256SUMS
+```
+
+动态验证仅允许在隔离 sandbox（无外网、无真实目标、可销毁 fixture）中运行，且必须由人工批准后执行。
+
 ## 声明
 
 本仓库所有内容仅供安全研究和教育目的使用。**严禁用于任何非法活动**。因滥用本仓库中提供的信息和代码而造成的一切后果由使用者自行承担。

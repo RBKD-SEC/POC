@@ -1,4 +1,4 @@
-# Python
+# Python artifacts
 __pycache__/
 *.py[cod]
 *$py.class
@@ -8,15 +8,14 @@ env/
 venv/
 .venv/
 pip-log.txt
+*.egg-info/
 
-# IDE
+# IDE / OS
 .idea/
 .vscode/
 *.swp
 *.swo
 *~
-
-# OS
 .DS_Store
 Thumbs.db
 
@@ -38,3 +37,13 @@ a.out
 *.tmp
 *.bak
 *.log
+
+# Release artifacts
+*.tar.gz
+*.zip
+dist/
+build/
+releases/
+
+# Local environment
+.env
