@@ -1,0 +1,40 @@
+name: poc-gates
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install jsonschema pyyaml
+
+      - name: Validate POC gates
+        run: python scripts/validate_poc_gates.py
+
+      - name: Run tests
+        run: python scripts/test_poc_gates.py
+
+      # 动态验证只在隔离 sandbox（无外网/无真实目标）的专用 job 中运行
+  dynamic-sandbox:
+    runs-on: ubuntu-latest
+    needs: gates
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run safe fixture only (no network)
+        run: |
+          python - <<'EOF'
+          # 占位：仅允许在无外网 runner 上执行 tests/fixtures/ 中明确的 safe fixture
+          print("sandbox-ready")
+          EOF
